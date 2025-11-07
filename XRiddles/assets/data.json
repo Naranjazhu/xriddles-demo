@@ -1,0 +1,35 @@
+{
+    "meta": { "nMain": 480, "nNovel": 120, "nHuman": 200 },
+    "systems": ["Human", "Qwen2.5‑72B", "DeepSeek‑V3", "GPT‑4.1", "Llama‑3.1‑70B"],
+    "results": {
+      "overall": {
+        "setting": "No‑Context",
+        "bySystem": { "Human": 86.2, "Qwen2.5‑72B": 74.5, "DeepSeek‑V3": 71.8, "GPT‑4.1": 69.4, "Llama‑3.1‑70B": 62.7 }
+      },
+      "byType": {
+        "setting": "In‑Context",
+        "bySystem": {
+          "Human": { "homophony": 89, "polysemy": 84, "deixis": 83, "novel": 78 },
+          "Qwen2.5‑72B": { "homophony": 78, "polysemy": 72, "deixis": 70, "novel": 61 },
+          "DeepSeek‑V3": { "homophony": 76, "polysemy": 69, "deixis": 67, "novel": 58 },
+          "GPT‑4.1": { "homophony": 73, "polysemy": 66, "deixis": 64, "novel": 55 },
+          "Llama‑3.1‑70B": { "homophony": 66, "polysemy": 60, "deixis": 59, "novel": 50 }
+        }
+      },
+      "humanTable": [
+        { "cohort": "Human (overall)", "noctx": 86.2, "ictx": 87.7 },
+        { "cohort": "Human (high familiarity)", "noctx": 92.1, "ictx": 93.0 },
+        { "cohort": "Human (low familiarity)", "noctx": 78.4, "ictx": 79.3 }
+      ],
+      "cases": [
+        { "head": "孔夫子搬家", "gold": "净是输", "model": "takes literal 'books'", "note": "Distractor lure via literal reading." },
+        { "head": "姜太公钓鱼", "gold": "愿者上钩", "model": "chooses rhyme‑mate alt.", "note": "Homophone collision under noise." }
+      ]
+    },
+    "downloads": {
+      "prompts": "# Prompt (zero‑shot MCQ)\nYou are given a xiehouyu head and four options (A‑D).\nPick the option that best represents the intended meaning.\nReturn only the letter (A/B/C/D).",
+      "evalPy": "# Pseudo eval script\nimport csv\nimport sys\n# read gold & preds, compute accuracy",
+      "csv": "system,setting,homophony,polysemy,deixis,novel,overall\nHuman,No-Context,89,84,83,78,86.2\nQwen2.5-72B,No-Context,78,72,70,61,74.5\nDeepSeek-V3,No-Context,76,69,67,58,71.8\nGPT-4.1,No-Context,73,66,64,55,69.4\nLlama-3.1-70B,No-Context,66,60,59,50,62.7"
+    }
+  }
+  
