@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>X-Riddles | Experiment 1 Results (Xiehouyu Matching)</title>
+  <meta name="description" content="English-first research results site for Experiment 1 (Xiehouyu matching): overview, methods, datasets, interactive charts, downloads, and in-place figures." />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <style>
+    /* Light academic theme (Stanford demo vibe) */
+    :root{--bg:#ffffff;--panel:#ffffff;--muted:#4a5568;--text:#1a202c;--brand:#2b6cb0;--accent:#3182ce;--border:#e2e8f0}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial;background:var(--bg);color:var(--text)}
+    a{color:var(--brand);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{width:min(1100px,94%);margin:0 auto}
+
+    header{border-bottom:1px solid var(--border);background:#f9fafb}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo{font-size:20px;color:#1a202c}
+    .tag{font-size:12px;color:#718096}
+    nav{display:flex;gap:18px}
+    nav a{font-size:14px;color:#2d3748}
+
+    .hero{padding:28px 0;border-bottom:1px solid var(--border)}
+    .hero h1{font-size:28px;line-height:1.25;margin:0 0 8px;font-weight:700}
+    .subtitle{color:var(--muted);max-width:860px;margin:0}
+    .hero-cta{margin:16px 0 0;display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:#edf2f7;color:#1a202c}
+    .btn.primary{background:#2b6cb0;border-color:#2b6cb0;color:#fff}
+
+    section.section{padding:32px 0;border-bottom:1px solid var(--border)}
+    h2{font-size:22px;margin:0 0 16px}
+    h3{font-size:16px;margin:14px 0 10px;color:#2d3748}
+    .grid{display:grid;gap:16px}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:920px){.grid.two{grid-template-columns:1fr}}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px}
+    .muted{color:var(--muted)}
+    ul.clean{margin:8px 0 0;padding-left:18px}
+    ul.badge-list{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0;padding:0;list-style:none}
+    .badge{font-size:12px;color:#1a202c;background:#edf2f7;border:1px solid var(--border);border-radius:999px;padding:3px 8px}
+
+    table{width:100%;border-collapse:collapse;border:1px solid var(--border);background:var(--panel);border-radius:8px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+    th{background:#f7fafc;color:#2d3748}
+    tr:hover td{background:#f9fafb}
+    .small{font-size:12px}
+
+    .figure{display:grid;gap:10px}
+    canvas{width:100%;height:320px}
+    figure.card img{width:100%;height:auto;display:block;border:1px solid var(--border)}
+    figure.card figcaption{margin-top:8px;color:#4a5568;font-size:12px}
+
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:#edf2f7;border:1px solid var(--border);color:#2d3748;border-radius:6px;padding:2px 6px;font-size:12px}
+    .foot{padding:22px 0;color:#718096;font-size:13px}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container header-inner">
+      <div class="brand"><span class="logo">X-Riddles</span><span class="tag">Experiment 1</span></div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#methods">Methods</a>
+        <a href="#results">Results</a>
+        <a href="#download">Downloads</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>Can LLMs Understand & Select the Intended Meaning of Chinese <em>Xiehouyu</em>?</h1>
+      <p class="subtitle">Experiment 1 (multiple-choice matching): given a riddle head (with/without sentence context), choose the correct <strong>intended continuation</strong> from four options (A/B/C/D).</p>
+      <div class="hero-cta">
+        <a class="btn primary" href="#results">View results</a>
+        <a class="btn" href="#download">Get data & materials</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Overview -->
+  <section id="overview" class="section">
+    <div class="container grid two">
+      <div>
+        <h2>Overview</h2>
+        <div class="card">
+          <h3>Task Definition</h3>
+          <p>Each item presents a <em>xiehouyu</em> head and four candidate continuations; exactly one is the intended idiomatic answer. We test two settings: <strong>No-Context</strong> (bare head) and <strong>In-Context</strong> (head inside a sentence). Accuracy is reported.</p>
+          <ul class="clean">
+            <li>Riddle types: <strong>Homophony</strong>, <strong>Polysemy</strong>, <strong>Deixis</strong>, plus a <strong>Novel Homophony</strong> subset to disentangle memorization vs reasoning.</li>
+            <li>Evaluation: 4-way multiple-choice, zero-shot prompting; models return A/B/C/D. Human baseline stratified by familiarity.</li>
+          </ul>
+          <ul class="badge-list">
+            <li class="badge">Zero-shot MCQ</li>
+            <li class="badge">2 settings</li>
+            <li class="badge">4 categories</li>
+            <li class="badge">Human baseline</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Figure 1 in the right place: Methods/Task schematic -->
+      <div id="methods" class="card">
+        <h2 style="margin-top:0">Methods (at a glance)</h2>
+        <p class="muted">Schematic of the Experiment 1 task and input–output format.</p>
+        <figure class="card" style="padding:0">
+          <img src="Figure 1.png" alt="Figure 1 — Task schematic for Experiment 1" loading="lazy">
+          <figcaption>Figure 1. Task schematic for Experiment 1. The model (or human) selects a single option that conveys the <em>intended</em> continuation.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" class="section">
+    <div class="container">
+      <h2>Results</h2>
+
+      <!-- Row 1: Interactive chart + paper figure (No-Context) -->
+      <div class="grid two">
+        <div class="card figure">
+          <h3>Overall Accuracy by System (No-Context)</h3>
+          <canvas id="chartOverall"></canvas>
+          <p class="muted small">Hover bars for values. Source: <span class="kbd">results.overall</span>.</p>
+        </div>
+
+        <figure class="card" style="padding:0">
+          <img src="Figure 2.png" alt="Figure 2 — No-Context accuracy from the paper" loading="lazy">
+          <figcaption>Figure 2. No-Context accuracy (paper figure). Shown here to visually match the publication; the chart on the left is interactive and uses the same metric.</figcaption>
+        </figure>
+      </div>
+
+      <!-- Row 2: By type (interactive) + Human baseline table image -->
+      <div class="grid two" style="margin-top:16px">
+        <div class="card figure">
+          <h3>By Riddle Type (In-Context)</h3>
+          <canvas id="chartByType"></canvas>
+          <p class="muted small">Grouped bars: Homophony / Polysemy / Deixis / Novel Homophony. Source: <span class="kbd">results.byType</span>.</p>
+        </div>
+
+        <figure class="card" style="padding:0">
+          <img src="Table 3.png" alt="Table 3 — Human accuracy by familiarity" loading="lazy">
+          <figcaption>Table 3. Human accuracy across familiarity strata. We use these values as a reference point when interpreting model performance.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Downloads -->
+<section id="download" class="section">
+  <div class="container grid two">
+    <div class="card">
+      <h2>Downloads</h2>
+      <p class="muted">Research data and supplementary materials will be made available after publication.</p>
+      <ul class="clean">
+        <li><strong>Prompt templates:</strong> <span class="muted small">Prompt templates</span></li>
+        <li><strong>Evaluation script:</strong> <span class="muted small">Evaluation script</span></li>
+        <li><strong>Results (CSV):</strong> <span class="muted small">Results</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Full Paper (PDF)</h2>
+      <p class="muted small">The full paper will be uploaded upon acceptance. This section currently serves as a placeholder.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="foot">Last updated: <span id="lastUpdated"></span>. Built as a static site.</div>
+  </div>
+</section>
+
+  <script>
+  // ---------- DATA (edit me) ----------
+  const DATA = {
+    meta: { nMain: 480, nNovel: 120, nHuman: 200 },
+    systems: ["Human","Qwen2.5-72B","DeepSeek-V3","GPT-4.1","Llama-3.1-70B"],
+    results: {
+      overall: {
+        setting: "No-Context",
+        bySystem: { "Human": 86.2, "Qwen2.5-72B": 74.5, "DeepSeek-V3": 71.8, "GPT-4.1": 69.4, "Llama-3.1-70B": 62.7 }
+      },
+      byType: {
+        setting: "In-Context",
+        bySystem: {
+          "Human": { homophony: 89, polysemy: 84, deixis: 83, novel: 78 },
+          "Qwen2.5-72B": { homophony: 78, polysemy: 72, deixis: 70, novel: 61 },
+          "DeepSeek-V3": { homophony: 76, polysemy: 69, deixis: 67, novel: 58 },
+          "GPT-4.1": { homophony: 73, polysemy: 66, deixis: 64, novel: 55 },
+          "Llama-3.1-70B": { homophony: 66, polysemy: 60, deixis: 59, novel: 50 }
+        }
+      }
+    },
+    downloads: {
+      prompts: `# Prompt (zero-shot MCQ)
+You are given a xiehouyu head and four options (A-D).
+Pick the option that best represents the intended meaning.
+Return only the letter (A/B/C/D).`,
+      evalPy: `# Pseudo eval script
+import csv
+import sys
+# read gold & preds, compute accuracy`,
+      csv: `system,setting,homophony,polysemy,deixis,novel,overall
+Human,No-Context,89,84,83,78,86.2
+Qwen2.5-72B,No-Context,78,72,70,61,74.5
+DeepSeek-V3,No-Context,76,69,67,58,71.8
+GPT-4.1,No-Context,73,66,64,55,69.4
+Llama-3.1-70B,No-Context,66,60,59,50,62.7`
+    }
+  }
+
+  // ---------- helpers ----------
+  function $(sel, root=document){ return root.querySelector(sel) }
+  function downloadText(filename, content){
+    const blob = new Blob([content], {type: "text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------- charts ----------
+  let chartOverall, chartByType
+  function renderCharts(){
+    const ctx1 = document.getElementById('chartOverall')
+    const labels = Object.keys(DATA.results.overall.bySystem)
+    const values = Object.values(DATA.results.overall.bySystem)
+    chartOverall && chartOverall.destroy()
+    chartOverall = new Chart(ctx1, {
+      type:'bar',
+      data:{ labels, datasets:[{ label: DATA.results.overall.setting, data: values }]},
+      options:{ responsive:true, plugins:{legend:{display:true}, tooltip:{enabled:true}},
+        scales:{ y:{ beginAtZero:true, max:100, ticks:{callback:v=>v+"%"} } } }
+    })
+
+    const ctx2 = document.getElementById('chartByType')
+    const systems = Object.keys(DATA.results.byType.bySystem)
+    const cat = ['homophony','polysemy','deixis','novel']
+    const datasets = cat.map(c=>({ label:c, data: systems.map(s=>DATA.results.byType.bySystem[s][c]) }))
+    chartByType && chartByType.destroy()
+    chartByType = new Chart(ctx2, {
+      type:'bar', data:{ labels:systems, datasets },
+      options:{ responsive:true, plugins:{legend:{position:'bottom'}},
+        scales:{ y:{ beginAtZero:true, max:100, ticks:{callback:v=>v+"%"} } } }
+    })
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    renderCharts();
+    $("#lastUpdated").textContent = new Date().toISOString().slice(0,10)
+  })
+  </script>
+</body>
+</html>
